@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a binary tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert a new node in the BST
+struct Node* insert(struct Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+    if (data < root->data) {
+        root->left = insert(root->left, data);
+    } else if (data > root->data) {
+        root->right = insert(root->right, data);
+    }
+    return root;
+}
+
+// Function to find the K-th smallest element in the BST
+void kthSmallestUtil(struct Node* root, int k, int* count, int* result) {
+    if (root == NULL || *count >= k) {
+        return;
+    }
+    kthSmallestUtil(root->left, k, count, result);
+    (*count)++;
+    if (*count == k) {
+        *result = root->data;
+        return;
+    }
+    kthSmallestUtil(root->right, k, count, result);
+}
+
+int kthSmallest(struct Node* root, int k) {
+    int count = 0;
+    int result = -1; // Assuming values are positive or zero
+    kthSmallestUtil(root, k, &count, &result);
+    return result;
+}
+
+int main() {
+    struct Node* root = NULL;
+    root = insert(root, 5);
+    insert(root, 3);
+    insert(root, 7);
+    insert(root, 2);
+    insert(root, 4);
+    insert(root, 6);
+    insert(root, 8);
+
+    int k = 3;
+    int kth = kthSmallest(root, k);
+
+    if (kth != -1) {
+        printf("The %d-th smallest element is: %d\n", k, kth);
+    } else {
+        printf("Tree does not have %d elements\n", k);
+    }
+
+    return 0;
+}
